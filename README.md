@@ -20,5 +20,3 @@ http://ieeexplore.ieee.org/document/916670/)
 [5]  "ns-2 Network Simulator", [online] Available: http://www.isi.edu/nsnamlns/
 
 [6]  The ns-3 network simulator. http://www.nsnam.org/
-
-[7]  TBD 
