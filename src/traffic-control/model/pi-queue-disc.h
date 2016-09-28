@@ -38,8 +38,6 @@
 #include "ns3/event-id.h"
 #include "ns3/random-variable-stream.h"
 
-#define BURST_RESET_TIMEOUT 1.5
-
 namespace ns3 {
 
 class TraceContainer;
@@ -165,18 +163,16 @@ private:
   // ** Variables supplied by user
   Queue::QueueMode m_mode;                      //!< Mode (bytes or packets)
   uint32_t m_queueLimit;                        //!< Queue limit in bytes / packets
-  Time m_sUpdate;                               //!< Start time of the update timer
-  Time m_tUpdate;                               //!< Time period after which CalculateP () is called
   uint32_t m_meanPktSize;                       //!< Average packet size in bytes
   uint32_t m_qRef;                              //!< Desired queue size
   double m_a;                                   //!< Parameter to pi controller
   double m_b;                                   //!< Parameter to pi controller
+  double m_w;                                   //!< Sampling frequency (Number of times per second)
 
   // ** Variables maintained by PI
   double m_dropProb;                            //!< Variable used in calculation of drop probability
+  Time m_qDelay;                                //!< Current value of queue delay
   uint32_t m_qOld;                              //!< Old value of queue length
-  uint32_t m_qCurrent;                          //!< Current value of queue length
-  double m_avgDqRate;                           //!< Time averaged dequeue rate
   double m_count;                               //!< Number of packets since last drop
   uint32_t m_countBytes;                        //!< Number of bytes since last drop
   EventId m_rtrsEvent;                          //!< Event used to decide the decision of interval of drop probability calculation

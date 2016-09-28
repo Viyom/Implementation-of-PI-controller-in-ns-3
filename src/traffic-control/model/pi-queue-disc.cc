@@ -67,7 +67,7 @@ TypeId PiQueueDisc::GetTypeId (void)
                    DoubleValue (1.25),
                    MakeDoubleAccessor (&PiQueueDisc::m_b),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("Tupdate",
+  /*  .AddAttribute ("Tupdate",
                    "Time period to calculate drop probability",
                    TimeValue (Seconds (0.03)),
                    MakeTimeAccessor (&PiQueueDisc::m_tUpdate),
@@ -76,7 +76,7 @@ TypeId PiQueueDisc::GetTypeId (void)
                    "Start time of the update timer",
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&PiQueueDisc::m_sUpdate),
-                   MakeTimeChecker ())
+                   MakeTimeChecker ())*/
     .AddAttribute ("QueueLimit",
                    "Queue limit in bytes/packets",
                    UintegerValue (25),
@@ -107,7 +107,7 @@ PiQueueDisc::PiQueueDisc ()
 {
   NS_LOG_FUNCTION (this);
   m_uv = CreateObject<UniformRandomVariable> ();
-  m_rtrsEvent = Simulator::Schedule (m_sUpdate, &PiQueueDisc::CalculateP, this);
+ // m_rtrsEvent = Simulator::Schedule (m_sUpdate, &PiQueueDisc::CalculateP, this);
 }
 
 PiQueueDisc::~PiQueueDisc ()
@@ -169,13 +169,13 @@ PiQueueDisc::GetStats ()
   NS_LOG_FUNCTION (this);
   return m_stats;
 }
-/*
+
 Time
 PiQueueDisc::GetQueueDelay (void)
 {
   NS_LOG_FUNCTION (this);
   return m_qDelay;
-}   */
+}
 
 int64_t
 PiQueueDisc::AssignStreams (int64_t stream)
@@ -227,7 +227,7 @@ PiQueueDisc::InitializeParams (void)
   // m_inMeasurement = false;
   // m_dqCount = -1;
   m_dropProb = 0;
-  m_avgDqRate = 0.0;
+ // m_avgDqRate = 0.0;
   // m_dqStart = 0;
 //  m_burstState = NO_BURST;
 // m_qDelayOld = Time (Seconds (0));
@@ -392,8 +392,8 @@ void PiQueueDisc::CalculateP ()
        m_burstReset = 0;
      }
 
-   m_qDelayOld = qDelay;*/
-  m_rtrsEvent = Simulator::Schedule (m_tUpdate, &PiQueueDisc::CalculateP, this);
+   m_qDelayOld = qDelay;
+  m_rtrsEvent = Simulator::Schedule (m_tUpdate, &PiQueueDisc::CalculateP, this);*/
 }
 
 Ptr<QueueDiscItem>
