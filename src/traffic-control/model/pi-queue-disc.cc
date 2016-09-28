@@ -82,21 +82,21 @@ TypeId PiQueueDisc::GetTypeId (void)
                    UintegerValue (25),
                    MakeUintegerAccessor (&PiQueueDisc::SetQueueLimit),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("DequeueThreshold",
-                   "Minimum queue size in bytes before dequeue rate is measured",
-                   UintegerValue (10000),
-                   MakeUintegerAccessor (&PiQueueDisc::m_dqThreshold),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("QueueDelayReference",
-                   "Desired queue delay",
-                   TimeValue (Seconds (0.02)),
-                   MakeTimeAccessor (&PiQueueDisc::m_qDelayRef),
-                   MakeTimeChecker ())
-    .AddAttribute ("MaxBurstAllowance",
-                   "Current max burst allowance in seconds before random drop",
-                   TimeValue (Seconds (0.1)),
-                   MakeTimeAccessor (&PiQueueDisc::m_maxBurst),
-                   MakeTimeChecker ())
+    /*  .AddAttribute ("DequeueThreshold",
+                     "Minimum queue size in bytes before dequeue rate is measured",
+                     UintegerValue (10000),
+                     MakeUintegerAccessor (&PiQueueDisc::m_dqThreshold),
+                     MakeUintegerChecker<uint32_t> ())
+      .AddAttribute ("QueueDelayReference",
+                     "Desired queue delay",
+                     TimeValue (Seconds (0.02)),
+                     MakeTimeAccessor (&PiQueueDisc::m_qDelayRef),
+                     MakeTimeChecker ())
+      .AddAttribute ("MaxBurstAllowance",
+                     "Current max burst allowance in seconds before random drop",
+                     TimeValue (Seconds (0.1)),
+                     MakeTimeAccessor (&PiQueueDisc::m_maxBurst),
+                     MakeTimeChecker ())   */
   ;
 
   return tid;
@@ -169,13 +169,13 @@ PiQueueDisc::GetStats ()
   NS_LOG_FUNCTION (this);
   return m_stats;
 }
-
+/*
 Time
 PiQueueDisc::GetQueueDelay (void)
 {
   NS_LOG_FUNCTION (this);
   return m_qDelay;
-}
+}   */
 
 int64_t
 PiQueueDisc::AssignStreams (int64_t stream)
@@ -224,13 +224,13 @@ void
 PiQueueDisc::InitializeParams (void)
 {
   // Initially queue is empty so variables are initialize to zero except m_dqCount
-  m_inMeasurement = false;
-  m_dqCount = -1;
+  // m_inMeasurement = false;
+  // m_dqCount = -1;
   m_dropProb = 0;
   m_avgDqRate = 0.0;
-  m_dqStart = 0;
-  m_burstState = NO_BURST;
-  m_qDelayOld = Time (Seconds (0));
+  // m_dqStart = 0;
+//  m_burstState = NO_BURST;
+// m_qDelayOld = Time (Seconds (0));
   m_stats.forcedDrop = 0;
   m_stats.unforcedDrop = 0;
 }
@@ -238,7 +238,7 @@ PiQueueDisc::InitializeParams (void)
 bool PiQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 {
   NS_LOG_FUNCTION (this << item << qSize);
-  if (m_burstAllowance.GetSeconds () > 0)
+/*  if (m_burstAllowance.GetSeconds () > 0)
     {
       // If there is still burst_allowance left, skip random early drop.
       return false;
@@ -248,7 +248,7 @@ bool PiQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
     {
       m_burstState = IN_BURST_PROTECTING;
       m_burstAllowance = m_maxBurst;
-    }
+    }*/
 
   double p = m_dropProb;
 
@@ -261,18 +261,18 @@ bool PiQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
   bool earlyDrop = true;
   double u =  m_uv->GetValue ();
 
-  if ((m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb < 0.2))
-    {
-      return false;
-    }
-  else if (GetMode () == Queue::QUEUE_MODE_BYTES && qSize <= 2 * m_meanPktSize)
-    {
-      return false;
-    }
-  else if (GetMode () == Queue::QUEUE_MODE_PACKETS && qSize <= 2)
-    {
-      return false;
-    }
+  /* if ((m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb < 0.2))
+     {
+       return false;
+     }
+   else if (GetMode () == Queue::QUEUE_MODE_BYTES && qSize <= 2 * m_meanPktSize)
+     {
+       return false;
+     }
+   else if (GetMode () == Queue::QUEUE_MODE_PACKETS && qSize <= 2)
+     {
+       return false;
+     }*/
 
   if (u > p)
     {
@@ -291,20 +291,20 @@ void PiQueueDisc::CalculateP ()
   NS_LOG_FUNCTION (this);
   Time qDelay;
   double p = 0.0;
-  bool missingInitFlag = false;
-  if (m_avgDqRate > 0)
-    {
-      qDelay = Time (Seconds (GetInternalQueue (0)->GetNBytes () / m_avgDqRate));
-    }
-  else
-    {
-      qDelay = Time (Seconds (0));
-      missingInitFlag = true;
-    }
+  /* bool missingInitFlag = false;
+   if (m_avgDqRate > 0)
+     {
+       qDelay = Time (Seconds (GetInternalQueue (0)->GetNBytes () / m_avgDqRate));
+     }
+   else
+     {
+       qDelay = Time (Seconds (0));
+       missingInitFlag = true;
+     }*/
 
-  m_qDelay = qDelay;
+//  m_qDelay = qDelay;
 
-  if (m_burstAllowance.GetSeconds () > 0)
+/*  if (m_burstAllowance.GetSeconds () > 0)
     {
       m_dropProb = 0;
     }
@@ -339,60 +339,60 @@ void PiQueueDisc::CalculateP ()
         {
           p = 0.02;
         }
-    }
+    }*/
 
   p += m_dropProb;
 
   // For non-linear drop in prob
 
-  if (qDelay.GetSeconds () == 0 && m_qDelayOld.GetSeconds () == 0)
-    {
-      p *= 0.98;
-    }
-  else if (qDelay.GetSeconds () > 0.2)
-    {
-      p += 0.02;
-    }
+  /* if (qDelay.GetSeconds () == 0 && m_qDelayOld.GetSeconds () == 0)
+     {
+       p *= 0.98;
+     }
+   else if (qDelay.GetSeconds () > 0.2)
+     {
+       p += 0.02;
+     }*/
 
   m_dropProb = (p > 0) ? p : 0;
-  if (m_burstAllowance < m_tUpdate)
-    {
-      m_burstAllowance =  Time (Seconds (0));
-    }
-  else
-    {
-      m_burstAllowance -= m_tUpdate;
-    }
+  /* if (m_burstAllowance < m_tUpdate)
+     {
+       m_burstAllowance =  Time (Seconds (0));
+     }
+   else
+     {
+       m_burstAllowance -= m_tUpdate;
+     }
 
-  uint32_t burstResetLimit = BURST_RESET_TIMEOUT / m_tUpdate.GetSeconds ();
-  if ( (qDelay.GetSeconds () < 0.5 * m_qDelayRef.GetSeconds ()) && (m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb == 0) && !missingInitFlag )
-    {
-      m_dqCount = -1;
-      m_avgDqRate = 0.0;
-    }
-  if ( (qDelay.GetSeconds () < 0.5 * m_qDelayRef.GetSeconds ()) && (m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb == 0) && (m_burstAllowance.GetSeconds () == 0))
-    {
-      if (m_burstState == IN_BURST_PROTECTING)
-        {
-          m_burstState = IN_BURST;
-          m_burstReset = 0;
-        }
-      else if (m_burstState == IN_BURST)
-        {
-          m_burstReset++;
-          if (m_burstReset > burstResetLimit)
-            {
-              m_burstReset = 0;
-              m_burstState = NO_BURST;
-            }
-        }
-    }
-  else if (m_burstState == IN_BURST)
-    {
-      m_burstReset = 0;
-    }
+   uint32_t burstResetLimit = BURST_RESET_TIMEOUT / m_tUpdate.GetSeconds ();
+   if ( (qDelay.GetSeconds () < 0.5 * m_qDelayRef.GetSeconds ()) && (m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb == 0) && !missingInitFlag )
+     {
+       m_dqCount = -1;
+       m_avgDqRate = 0.0;
+     }
+   if ( (qDelay.GetSeconds () < 0.5 * m_qDelayRef.GetSeconds ()) && (m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb == 0) && (m_burstAllowance.GetSeconds () == 0))
+     {
+       if (m_burstState == IN_BURST_PROTECTING)
+         {
+           m_burstState = IN_BURST;
+           m_burstReset = 0;
+         }
+       else if (m_burstState == IN_BURST)
+         {
+           m_burstReset++;
+           if (m_burstReset > burstResetLimit)
+             {
+               m_burstReset = 0;
+               m_burstState = NO_BURST;
+             }
+         }
+     }
+   else if (m_burstState == IN_BURST)
+     {
+       m_burstReset = 0;
+     }
 
-  m_qDelayOld = qDelay;
+   m_qDelayOld = qDelay;*/
   m_rtrsEvent = Simulator::Schedule (m_tUpdate, &PiQueueDisc::CalculateP, this);
 }
 
@@ -408,13 +408,13 @@ PiQueueDisc::DoDequeue ()
     }
 
   Ptr<QueueDiscItem> item = StaticCast<QueueDiscItem> (GetInternalQueue (0)->Dequeue ());
-  double now = Simulator::Now ().GetSeconds ();
-  uint32_t pktSize = item->GetPacketSize ();
+  // double now = Simulator::Now ().GetSeconds ();
+//  uint32_t pktSize = item->GetPacketSize ();
 
   // if not in a measurement cycle and the queue has built up to dq_threshold,
   // start the measurement cycle
 
-  if ( (GetInternalQueue (0)->GetNBytes () >= m_dqThreshold) && (!m_inMeasurement) )
+/*  if ( (GetInternalQueue (0)->GetNBytes () >= m_dqThreshold) && (!m_inMeasurement) )
     {
       m_dqStart = now;
       m_dqCount = 0;
@@ -456,7 +456,7 @@ PiQueueDisc::DoDequeue ()
               m_inMeasurement = false;
             }
         }
-    }
+    }*/
 
   return item;
 }
