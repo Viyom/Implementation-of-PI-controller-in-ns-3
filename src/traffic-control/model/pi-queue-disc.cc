@@ -57,6 +57,11 @@ TypeId PiQueueDisc::GetTypeId (void)
                    UintegerValue (1000),
                    MakeUintegerAccessor (&PiQueueDisc::m_meanPktSize),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("QueueRef",
+                   "Desired queue size",
+                   UintegerValue (50),
+                   MakeUintegerAccessor (&PiQueueDisc::m_qRef),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("A",
                    "Value of alpha",
                    DoubleValue (0.125),
@@ -66,6 +71,11 @@ TypeId PiQueueDisc::GetTypeId (void)
                    "Value of beta",
                    DoubleValue (1.25),
                    MakeDoubleAccessor (&PiQueueDisc::m_b),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("W",
+                   "Sampling frequency",
+                   DoubleValue (170),
+                   MakeDoubleAccessor (&PiQueueDisc::m_w),
                    MakeDoubleChecker<double> ())
   /*  .AddAttribute ("Tupdate",
                    "Time period to calculate drop probability",
@@ -107,7 +117,7 @@ PiQueueDisc::PiQueueDisc ()
 {
   NS_LOG_FUNCTION (this);
   m_uv = CreateObject<UniformRandomVariable> ();
- // m_rtrsEvent = Simulator::Schedule (m_sUpdate, &PiQueueDisc::CalculateP, this);
+  m_rtrsEvent = Simulator::Schedule ((Time)(1.0/m_w), &PiQueueDisc::CalculateP, this);
 }
 
 PiQueueDisc::~PiQueueDisc ()
@@ -238,41 +248,10 @@ PiQueueDisc::InitializeParams (void)
 bool PiQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 {
   NS_LOG_FUNCTION (this << item << qSize);
-/*  if (m_burstAllowance.GetSeconds () > 0)
-    {
-      // If there is still burst_allowance left, skip random early drop.
-      return false;
-    }
-
-  if (m_burstState == NO_BURST)
-    {
-      m_burstState = IN_BURST_PROTECTING;
-      m_burstAllowance = m_maxBurst;
-    }*/
 
   double p = m_dropProb;
-
-  uint32_t packetSize = item->GetPacketSize ();
-
-  if (GetMode () == Queue::QUEUE_MODE_BYTES)
-    {
-      p = p * packetSize / m_meanPktSize;
-    }
   bool earlyDrop = true;
   double u =  m_uv->GetValue ();
-
-  /* if ((m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb < 0.2))
-     {
-       return false;
-     }
-   else if (GetMode () == Queue::QUEUE_MODE_BYTES && qSize <= 2 * m_meanPktSize)
-     {
-       return false;
-     }
-   else if (GetMode () == Queue::QUEUE_MODE_PACKETS && qSize <= 2)
-     {
-       return false;
-     }*/
 
   if (u > p)
     {
@@ -289,8 +268,23 @@ bool PiQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 void PiQueueDisc::CalculateP ()
 {
   NS_LOG_FUNCTION (this);
-  Time qDelay;
+//  Time qDelay;
   double p = 0.0;
+  uint32_t qlen = GetQueueSize ();
+  if (GetMode () == Queue::QUEUE_MODE_BYTES)
+     {
+       p = m_a*((qlen*1.0/m_meanPktSize) - m_qRef) - m_b*((m_qOld*1.0/m_meanPktSize) - m_qRef) + m_dropProb;
+     }
+   else
+     {
+       p = m_a*(qlen - m_qRef) - m_b*(m_qOld - m_qRef) + m_dropProb;
+     }
+   p = (p < 0) ? 0 : p;
+   p = (p > 1) ? 1 : p;
+   
+   m_dropProb = p;
+   m_qOld = qlen;
+   m_rtrsEvent = Simulator::Schedule ((Time)(1.0/m_w), &PiQueueDisc::CalculateP, this);
   /* bool missingInitFlag = false;
    if (m_avgDqRate > 0)
      {
@@ -341,8 +335,6 @@ void PiQueueDisc::CalculateP ()
         }
     }*/
 
-  p += m_dropProb;
-
   // For non-linear drop in prob
 
   /* if (qDelay.GetSeconds () == 0 && m_qDelayOld.GetSeconds () == 0)
@@ -354,7 +346,6 @@ void PiQueueDisc::CalculateP ()
        p += 0.02;
      }*/
 
-  m_dropProb = (p > 0) ? p : 0;
   /* if (m_burstAllowance < m_tUpdate)
      {
        m_burstAllowance =  Time (Seconds (0));
