@@ -73,7 +73,7 @@ public:
   typedef struct
   {
     uint32_t unforcedDrop;      //!< Early probability drops: proactive
-    double forcedDrop;        //!< Drops due to queue limit: reactive
+    uint32_t forcedDrop;        //!< Drops due to queue limit: reactive
   } Stats;
 
   /**
