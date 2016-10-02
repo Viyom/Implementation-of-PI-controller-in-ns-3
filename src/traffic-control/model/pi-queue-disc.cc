@@ -59,9 +59,9 @@ TypeId PiQueueDisc::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("QueueRef",
                    "Desired queue size",
-                   UintegerValue (50),
-                   MakeUintegerAccessor (&PiQueueDisc::m_qRef),
-                   MakeUintegerChecker<uint32_t> ())
+                   DoubleValue (50),
+                   MakeDoubleAccessor (&PiQueueDisc::m_qRef),
+                   MakeDoubleChecker<double> ())
     .AddAttribute ("A",
                    "Value of alpha",
                    DoubleValue (0.00001822),
@@ -79,9 +79,9 @@ TypeId PiQueueDisc::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("QueueLimit",
                    "Queue limit in bytes/packets",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&PiQueueDisc::SetQueueLimit),
-                   MakeUintegerChecker<uint32_t> ())
+                   DoubleValue (100),
+                   MakeDoubleAccessor (&PiQueueDisc::SetQueueLimit),
+                   MakeDoubleChecker<double> ())
   ;
 
   return tid;
@@ -124,7 +124,7 @@ PiQueueDisc::GetMode (void)
 }
 
 void
-PiQueueDisc::SetQueueLimit (uint32_t lim)
+PiQueueDisc::SetQueueLimit (double lim)
 {
   NS_LOG_FUNCTION (this << lim);
   m_queueLimit = lim;

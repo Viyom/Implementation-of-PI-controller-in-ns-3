@@ -73,7 +73,7 @@ public:
   typedef struct
   {
     uint32_t unforcedDrop;      //!< Early probability drops: proactive
-    uint32_t forcedDrop;        //!< Drops due to queue limit: reactive
+    double forcedDrop;        //!< Drops due to queue limit: reactive
   } Stats;
 
   /**
@@ -102,7 +102,7 @@ public:
    *
    * \param lim The limit in bytes or packets.
    */
-  void SetQueueLimit (uint32_t lim);
+  void SetQueueLimit (double lim);
 
   /**
    * \brief Get queue delay
@@ -162,9 +162,9 @@ private:
 
   // ** Variables supplied by user
   Queue::QueueMode m_mode;                      //!< Mode (bytes or packets)
-  uint32_t m_queueLimit;                        //!< Queue limit in bytes / packets
+  double m_queueLimit;                          //!< Queue limit in bytes / packets
   uint32_t m_meanPktSize;                       //!< Average packet size in bytes
-  uint32_t m_qRef;                              //!< Desired queue size
+  double m_qRef;                                //!< Desired queue size
   double m_a;                                   //!< Parameter to pi controller
   double m_b;                                   //!< Parameter to pi controller
   double m_w;                                   //!< Sampling frequency (Number of times per second)
