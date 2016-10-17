@@ -79,7 +79,7 @@ TypeId PiQueueDisc::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("QueueLimit",
                    "Queue limit in bytes/packets",
-                   DoubleValue (100),
+                   DoubleValue (50),
                    MakeDoubleAccessor (&PiQueueDisc::SetQueueLimit),
                    MakeDoubleChecker<double> ())
   ;
@@ -220,6 +220,13 @@ bool PiQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 
   double p = m_dropProb;
   bool earlyDrop = true;
+  
+  if (GetMode () == Queue::QUEUE_MODE_BYTES)
+    {
+       p = p * item->GetPacketSize () / m_meanPktSize;
+    }
+  p = p > 1 ? 1 : p;
+
   double u =  m_uv->GetValue ();
 
   if (u > p)
