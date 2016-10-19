@@ -74,6 +74,7 @@ public:
   {
     uint32_t unforcedDrop;      //!< Early probability drops: proactive
     uint32_t forcedDrop;        //!< Drops due to queue limit: reactive
+    uint32_t packetsDequeued;
   } Stats;
 
   /**
@@ -109,6 +110,10 @@ public:
    */
   Time GetQueueDelay (void);
 
+  /**
+   * \brief Get threshold
+   */
+  uint32_t GetThreshold (void);
   /**
    * \brief Get PI statistics after running.
    *
