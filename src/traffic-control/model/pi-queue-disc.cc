@@ -149,25 +149,29 @@ PiQueueDisc::GetQueueSize (void)
 }
 
 uint32_t
-PiQueueDisc::GetThreshold (void)
+PiQueueDisc::GetDropCount (void)
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t drops = m_stats.forcedDrop + m_stats.unforcedDrop;
+  m_stats.forcedDrop = 0;
+  m_stats.unforcedDrop = 0;
+  return drops;
+}
+
+uint32_t
+PiQueueDisc::GetThroughput (void)
 {
   NS_LOG_FUNCTION (this);
   uint32_t packetsDequeued = m_stats.packetsDequeued;
   m_stats.packetsDequeued = 0;
   return packetsDequeued*10;
 }
+
 PiQueueDisc::Stats
 PiQueueDisc::GetStats ()
 {
   NS_LOG_FUNCTION (this);
   return m_stats;
-}
-
-Time
-PiQueueDisc::GetQueueDelay (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_qDelay;
 }
 
 int64_t
@@ -219,7 +223,7 @@ PiQueueDisc::InitializeParams (void)
   m_dropProb = 0;
   m_stats.forcedDrop = 0;
   m_stats.unforcedDrop = 0;
-  m_stats.packetCount = 0;
+  m_stats.packetsDequeued = 0;
   m_qOld = 0;
 }
 
@@ -283,7 +287,7 @@ PiQueueDisc::DoDequeue ()
     }
 
   Ptr<QueueDiscItem> item = StaticCast<QueueDiscItem> (GetInternalQueue (0)->Dequeue ());
-  m_stats.packetsDequeued++;
+  m_stats.packetsDequeued += item->GetPacketSize ();
   return item;
 }
 

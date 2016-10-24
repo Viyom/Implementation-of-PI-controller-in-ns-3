@@ -106,14 +106,14 @@ public:
   void SetQueueLimit (double lim);
 
   /**
-   * \brief Get queue delay
+   * \brief Get drop count
    */
-  Time GetQueueDelay (void);
-
+  uint32_t GetDropCount (void);
+  
   /**
-   * \brief Get threshold
+   * \brief Get throughput
    */
-  uint32_t GetThreshold (void);
+  uint32_t GetThroughput (void);
   /**
    * \brief Get PI statistics after running.
    *
