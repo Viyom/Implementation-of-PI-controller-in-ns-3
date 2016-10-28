@@ -96,17 +96,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueRef");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("W", DoubleValue (125)), true,
                          "Verify that we can actually set the attribute W");
-/*  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.03))), true,
-                         "Verify that we can actually set the attribute Tupdate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Supdate", TimeValue (Seconds (0.0))), true,
-                         "Verify that we can actually set the attribute Supdate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("DequeueThreshold", UintegerValue (10000)), true,
-                         "Verify that we can actually set the attribute DequeueThreshold");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueDelayReference", TimeValue (Seconds (0.02))), true,
-                         "Verify that we can actually set the attribute QueueDelayReference");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBurstAllowance", TimeValue (Seconds (0.1))), true,
-                         "Verify that we can actually set the attribute MaxBurstAllowance");
-*/
+
   Address dest;
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
@@ -165,11 +155,11 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
 
   item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in there");
-/*
+
   // test 2: test in a simple dumbbell topology
   pktSize = 1000;
-  std::string piLinkDataRate = "1.5Mbps";
-  std::string piLinkDelay = "20ms";
+  std::string piLinkDataRate = "10Mbps";
+  std::string piLinkDelay = "50ms";
 
   double global_start_time = 0.0;
   double global_stop_time = 7.0;
@@ -216,13 +206,16 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
       modeSize = pktSize + ipHeader.GetSerializedSize ();
     }
 
-  qSize = 100 * modeSize;
+  qSize = 200 * modeSize;
 
   // PI params
   Config::SetDefault ("ns3::PiQueueDisc::Mode", StringValue (mode));
   Config::SetDefault ("ns3::PiQueueDisc::MeanPktSize", UintegerValue (meanPktSize + ipHeader.GetSerializedSize ()));
-  Config::SetDefault ("ns3::PiQueueDisc::DequeueThreshold", UintegerValue (10000));
   Config::SetDefault ("ns3::PiQueueDisc::QueueLimit", DoubleValue (qSize));
+  Config::SetDefault ("ns3::PiQueueDisc::A", DoubleValue (0.00001822));
+  Config::SetDefault ("ns3::PiQueueDisc::B", DoubleValue (0.00001816));
+  Config::SetDefault ("ns3::PiQueueDisc::QueueRef", DoubleValue (50));
+  Config::SetDefault ("ns3::PiQueueDisc::W", DoubleValue (170));
 
   InternetStackHelper internet;
   internet.Install (c);
@@ -246,13 +239,13 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
 
   p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("5ms"));
   devn0n2 = p2p.Install (n0n2);
   tchPfifo.Install (devn0n2);
 
   p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("3ms"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("5ms"));
   devn1n2 = p2p.Install (n1n2);
   tchPfifo.Install (devn1n2);
 
@@ -265,7 +258,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
 
   p2p.SetQueue ("ns3::DropTailQueue");
   p2p.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2p.SetChannelAttribute ("Delay", StringValue ("4ms"));
+  p2p.SetChannelAttribute ("Delay", StringValue ("5ms"));
   devn3n4 = p2p.Install (n3n4);
   tchPfifo.Install (devn3n4);
 
@@ -299,12 +292,12 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
   sinkApp.Stop (Seconds (sink_stop_time));
 
   // Connection one
-  // Clients are in left side */
+  // Clients are in left side 
   /*
    * Create the OnOff applications to send TCP to the server
    * onoffhelper is a client that send data to TCP destination
   */
-/*  OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
+  OnOffHelper clientHelper1 ("ns3::TcpSocketFactory", Address ());
   clientHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   clientHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   clientHelper1.SetAttribute ("PacketSize", UintegerValue (pktSize));
@@ -337,7 +330,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
 
   NS_TEST_EXPECT_MSG_NE (st.unforcedDrop, 0, "There should be some packets dropped due to prob mark");
   NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero packets dropped due to queue limit");
-*/
+
   Simulator::Destroy ();
 }
 
