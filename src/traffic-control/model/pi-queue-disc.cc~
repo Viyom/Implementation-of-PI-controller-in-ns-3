@@ -117,7 +117,7 @@ PiQueueDisc::PiQueueDisc ()
 {
   NS_LOG_FUNCTION (this);
   m_uv = CreateObject<UniformRandomVariable> ();
-  m_rtrsEvent = Simulator::Schedule ((Seconds)(1.0/m_w), &PiQueueDisc::CalculateP, this);
+  m_rtrsEvent = Simulator::Schedule ((Time)(1.0/m_w), &PiQueueDisc::CalculateP, this);
 }
 
 PiQueueDisc::~PiQueueDisc ()
