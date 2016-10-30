@@ -4,7 +4,7 @@
 PI queue disc
 ----------------
 
-This chapter describes the PI [Pan12]_  queue disc implementation 
+This chapter describes the PI [Hollot01]_  queue disc implementation 
 in |ns3|. 
 
 Proportional Integral controller (PI) is a queuing discipline that aims to
@@ -32,7 +32,7 @@ based on ns-2 code implemented by C.V. Hollot, Vishal Misra, Don Towsley and Wei
 
 References
 ==========
-.. [Pan12] C. V. Hollot, Vishal Misra, Don Towsley and Wei-BoGong, "On Designing Improved Controllers for AQM Routers Supporting TCP Flows", IEEE/INFOCOM, 2001. Available online at `<ftp://gaia.cs.umass.edu/pub/MisraInfocom01-AQM-Controller.pdf>`_.
+.. [Hollot01] C. V. Hollot, Vishal Misra, Don Towsley and Wei-BoGong, "On Designing Improved Controllers for AQM Routers Supporting TCP Flows", IEEE/INFOCOM, 2001. Available online at `<ftp://gaia.cs.umass.edu/pub/MisraInfocom01-AQM-Controller.pdf>`_.
 
 .. comment
    This ref defined in codel.rst:
