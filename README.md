@@ -6,25 +6,6 @@
 
 PI Controller [1] is an Active Queue Management (AQM) algorithm like RED [2], ARED [3], etc. PIE [4], the latest algorithm, is based on PI. PI Controller is already implemented in ns-2 [5]. This repository contains an implementation of PI controller in ns-3 [6].
 
-###Path for PI Controller implementation 
-
-To check the code for implementation of PI Controller, refer to the path given below:
-
-`src/traffic-control/model/pi-queue-disc.h`
-
-`src/traffic-control/model/pi-queue-disc.cc`
-
-###PI Controller TestSuite
-
-To find the code for TestSuite of PI Controller, refer to the path given below: 
-
-`src/traffic-control/test/pi-queue-disc-test-suite.cc`
-
-and should be executed as
-
-`./test.py --suite=pi-queue-disc`
-
-
 ###References:
 
 
