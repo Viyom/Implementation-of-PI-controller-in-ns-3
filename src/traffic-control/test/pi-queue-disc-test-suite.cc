@@ -195,7 +195,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
                          "Verify that we can actually set the attribute QueueRef");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", DoubleValue (qSize)), true,
                          "Verify that we can actually set the attribute QueueLimit");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("W", DoubleValue (300)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("W", DoubleValue (500)), true,
                          "Verify that we can actually set the attribute W");
   queue->Initialize ();
   EnqueueWithDelay (queue, pktSize, 300);
