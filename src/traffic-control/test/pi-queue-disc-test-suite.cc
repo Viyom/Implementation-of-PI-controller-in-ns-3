@@ -179,7 +179,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
   EnqueueWithDelay (queue, pktSize, 300);
   Simulator::Stop (Seconds (40));
   Simulator::Run ();
-  st = StaticCast<PiQueueDisc> (queue)->GetStats ();
+  PiQueueDisc::Stats st = StaticCast<PiQueueDisc> (queue)->GetStats ();
   drop.test2 = st.unforcedDrop;
   NS_TEST_EXPECT_MSG_NE (drop.test2, 0, "There should be some unforced drops");
 
