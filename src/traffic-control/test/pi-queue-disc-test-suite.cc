@@ -68,7 +68,7 @@ private:
 };
 
 PiQueueDiscTestCase::PiQueueDiscTestCase ()
-  : TestCase ("Sanity check on the PI queue implementation")
+  : TestCase ("Sanity check on the PI queue disc implementation")
 {
 }
 
@@ -101,7 +101,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
 
   if (queue->GetMode () == Queue::QUEUE_MODE_BYTES)
     {
-      pktSize = 1000;
+      pktSize = 500;
       modeSize = pktSize;
       queue->SetQueueLimit (qSize * modeSize);
     }
@@ -156,40 +156,42 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
   item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in there");
 
-  // test 2: more data pumped at same time resulting in no drops
-
-  queue = CreateObject<PiQueueDisc> ();
-  qSize = 300 * modeSize;
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MeanPktSize", UintegerValue (pktSize)), true,
-                         "Verify that we can actually set the attribute MeanPktSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueRef", DoubleValue (150)), true,
-                         "Verify that we can actually set the attribute QueueRef");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", DoubleValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("W", DoubleValue (300)), true,
-                         "Verify that we can actually set the attribute W");
-  queue->Initialize ();
-  Enqueue (queue, pktSize, 300);
-  PiQueueDisc::Stats st = StaticCast<PiQueueDisc> (queue)->GetStats ();
-  NS_TEST_EXPECT_MSG_EQ (st.unforcedDrop, 0, "There should zero dropped packets due to probability mark");
-  NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should zero dropped packets due to queue full");
-
   struct d {
+    uint32_t test2;
     uint32_t test3;
-    uint32_t test4;
   } drop;
 
 
-  // test 3: more data pumped at interval of 0.1s resulting in some proactive drops
+  // test 2: default values for PI parameters
   queue = CreateObject<PiQueueDisc> ();
   qSize = 300 * modeSize;
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
                          "Verify that we can actually set the attribute Mode");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MeanPktSize", UintegerValue (pktSize)), true,
                          "Verify that we can actually set the attribute MeanPktSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueRef", DoubleValue (150)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueRef", DoubleValue (50)), true,
+                         "Verify that we can actually set the attribute QueueRef");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", DoubleValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("W", DoubleValue (170)), true,
+                         "Verify that we can actually set the attribute W");
+  queue->Initialize ();
+  EnqueueWithDelay (queue, pktSize, 300);
+  Simulator::Stop (Seconds (40));
+  Simulator::Run ();
+  st = StaticCast<PiQueueDisc> (queue)->GetStats ();
+  drop.test2 = st.unforcedDrop;
+  NS_TEST_EXPECT_MSG_NE (drop.test2, 0, "There should be some unforced drops");
+
+
+  // test 3: high value of W
+  queue = CreateObject<PiQueueDisc> ();
+  qSize = 300 * modeSize;
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MeanPktSize", UintegerValue (pktSize)), true,
+                         "Verify that we can actually set the attribute MeanPktSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueRef", DoubleValue (50)), true,
                          "Verify that we can actually set the attribute QueueRef");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", DoubleValue (qSize)), true,
                          "Verify that we can actually set the attribute QueueLimit");
@@ -201,29 +203,7 @@ PiQueueDiscTestCase::RunPiTest (StringValue mode)
   Simulator::Run ();
   st = StaticCast<PiQueueDisc> (queue)->GetStats ();
   drop.test3 = st.unforcedDrop;
-  NS_TEST_EXPECT_MSG_NE (drop.test3, 0, "There should be some dropped packets");
-
-
-  // test 4: more data pumped at interval of 0.1s with greater value of "W" resulting in more proactive drops
-  queue = CreateObject<PiQueueDisc> ();
-  qSize = 300 * modeSize;
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MeanPktSize", UintegerValue (pktSize)), true,
-                         "Verify that we can actually set the attribute MeanPktSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueRef", DoubleValue (150)), true,
-                         "Verify that we can actually set the attribute QueueRef");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", DoubleValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("W", DoubleValue (3000)), true,
-                         "Verify that we can actually set the attribute W");
-  queue->Initialize ();
-  EnqueueWithDelay (queue, pktSize, 300);
-  Simulator::Stop (Seconds (40));
-  Simulator::Run ();
-  st = StaticCast<PiQueueDisc> (queue)->GetStats ();
-  drop.test4 = st.unforcedDrop;
-  NS_TEST_EXPECT_MSG_GT (drop.test4, drop.test3, "There should be some dropped packets");
+  NS_TEST_EXPECT_MSG_GT (drop.test3, drop.test2, "Test 3 should have more unforced drops than Test 2");
 }
 
 void 
