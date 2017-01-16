@@ -2,14 +2,13 @@
 .. highlight:: cpp
 
 PI queue disc
-----------------
+-------------
 
-This chapter describes the PI [Hollot01]_  queue disc implementation 
-in |ns3|. 
+This chapter describes the Proportional Integral controller (PI) [Hollot01]_  queue disc
+implementation in |ns3|. 
 
-Proportional Integral controller (PI) is a queuing discipline that aims to
-solve the bufferbloat [Buf14]_ problem. The model in ns-3 is a port of C.V. Hollot,
-Vishal Misra, Don Towsley and Wei-Bo Gong's ns-2 PI model.
+PI controller is a queuing discipline, proposed as an alternative to RED. PI model in ns-3
+is a port of C.V. Hollot, Vishal Misra, Don Towsley and Wei-Bo Gong's ns-2 PI model.
 
 
 Model Description
@@ -17,8 +16,9 @@ Model Description
 
 The source code for the PI model is located in the directory ``src/traffic-control/model``
 and consists of 2 files `pi-queue-disc.h` and `pi-queue-disc.cc` defining a PiQueueDisc
-class. The code was ported to |ns3| by Mohit P. Tahiliani, Priya S Tavarmani and Viyom Mittal
-based on ns-2 code implemented by C.V. Hollot, Vishal Misra, Don Towsley and Wei-Bo Gong.
+class. The code was ported to |ns3| by Mohit P. Tahiliani, Priya S. Tavarmani and Viyom
+Mittal based on the ns-2 code implemented by C.V. Hollot, Vishal Misra, Don Towsley and
+Wei-Bo Gong.
 
 * class :cpp:class:`PiQueueDisc`: This class implements the main PI algorithm:
 
@@ -28,15 +28,11 @@ based on ns-2 code implemented by C.V. Hollot, Vishal Misra, Don Towsley and Wei
 
   * ``PiQueueDisc::CalculateP ()``: This routine is called at a regular interval of `1.0/m_w` where 'm_w' is a sampling frequency and updates the drop probability, which is required by ``PiQueueDisc::DropEarly()``
 
-  * ``PiQueueDisc::DoDequeue ()``: This routine calculates the average departure rate which is required for updating the drop probability in ``PiQueueDisc::CalculateP ()``  
+  * ``PiQueueDisc::DoDequeue ()``: This routine dequeues the packet from queue if it not empty.  
 
 References
 ==========
 .. [Hollot01] C. V. Hollot, Vishal Misra, Don Towsley and Wei-BoGong, "On Designing Improved Controllers for AQM Routers Supporting TCP Flows", IEEE/INFOCOM, 2001. Available online at `<ftp://gaia.cs.umass.edu/pub/MisraInfocom01-AQM-Controller.pdf>`_.
-
-.. comment
-   This ref defined in codel.rst:
-   [Buf14] Bufferbloat.net.  Available online at `<http://www.bufferbloat.net/>`_.
 
 Attributes
 ==========
@@ -61,15 +57,14 @@ The example for PI is `red-vs-pi.cc` located in ``src/traffic-control/examples``
    $ ./waf --run "red-vs-pi --PrintHelp"
    $ ./waf --run "red-vs-pi --queueDiscType=PI"
 
-The expected output from the previous commands are 10 .pcap files.
-
 Validation
 **********
 
-The PI model is tested using :cpp:class:`PiQueueDiscTestSuite` class defined in `src/traffic-control/test/pi-queue-test-suite.cc`. The suite includes 2 test cases:
+The PI model is tested using :cpp:class:`PiQueueDiscTestSuite` class defined in `src/traffic-control/test/pi-queue-test-suite.cc`. The suite includes 3 test cases:
 
 * Test 1: The first test checks the enqueue/dequeue with no drops and makes sure that PI attributes can be set correctly.
-* Test 2: The second test checks the enqueue/dequeue with drops according to PI algorithm
+* Test 2: drops according to default PI algorithm
+* Test 3: high value of m_w
 
 The test suite can be run using the following commands: 
 
@@ -84,4 +79,3 @@ or
 ::
 
   $ NS_LOG="PiQueueDisc" ./waf --run "test-runner --suite=pi-queue-disc"
-
