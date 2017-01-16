@@ -54,13 +54,12 @@ The key attributes that the PiQueue class holds include the following:
 Examples
 ========
 
-The example for PI is `pi-example.cc` located in ``src/traffic-control/examples``.  To run the file (the first invocation below shows the available
-command-line options):
+The example for PI is `red-vs-pi.cc` located in ``src/traffic-control/examples``. To run the file (the first invocation below shows the available command-line options):
 
 :: 
 
-   $ ./waf --run "pi-example --PrintHelp"
-   $ ./waf --run "pi-example --writePcap=1" 
+   $ ./waf --run "red-vs-pi --PrintHelp"
+   $ ./waf --run "red-vs-pi --queueDiscType=PI"
 
 The expected output from the previous commands are 10 .pcap files.
 
