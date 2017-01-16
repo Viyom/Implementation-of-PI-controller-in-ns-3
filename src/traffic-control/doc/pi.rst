@@ -10,7 +10,6 @@ implementation in |ns3|.
 PI controller is a queuing discipline, proposed as an alternative to RED. PI model in ns-3
 is a port of C.V. Hollot, Vishal Misra, Don Towsley and Wei-Bo Gong's ns-2 PI model.
 
-
 Model Description
 *****************
 
