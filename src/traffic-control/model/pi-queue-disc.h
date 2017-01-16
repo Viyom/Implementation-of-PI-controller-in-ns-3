@@ -106,15 +106,6 @@ public:
   void SetQueueLimit (double lim);
 
   /**
-   * \brief Get drop count
-   */
-  uint32_t GetDropCount (void);
-  
-  /**
-   * \brief Get throughput
-   */
-  uint32_t GetThroughput (void);
-  /**
    * \brief Get PI statistics after running.
    *
    * \returns The drop statistics.
@@ -170,16 +161,13 @@ private:
   double m_queueLimit;                          //!< Queue limit in bytes / packets
   uint32_t m_meanPktSize;                       //!< Average packet size in bytes
   double m_qRef;                                //!< Desired queue size
-  double m_a;                                   //!< Parameter to pi controller
-  double m_b;                                   //!< Parameter to pi controller
+  double m_a;                                   //!< Parameter to PI controller
+  double m_b;                                   //!< Parameter to PI controller
   double m_w;                                   //!< Sampling frequency (Number of times per second)
 
   // ** Variables maintained by PI
   double m_dropProb;                            //!< Variable used in calculation of drop probability
-  Time m_qDelay;                                //!< Current value of queue delay
   uint32_t m_qOld;                              //!< Old value of queue length
-  double m_count;                               //!< Number of packets since last drop
-  uint32_t m_countBytes;                        //!< Number of bytes since last drop
   EventId m_rtrsEvent;                          //!< Event used to decide the decision of interval of drop probability calculation
   Ptr<UniformRandomVariable> m_uv;              //!< Rng stream
 };
@@ -187,4 +175,3 @@ private:
 };   // namespace ns3
 
 #endif
-
