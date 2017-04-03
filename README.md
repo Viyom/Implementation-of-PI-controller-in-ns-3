@@ -1,12 +1,12 @@
 # Implementation of PI Controller in ns-3
-##Course Code: CS822
-##Assignment:  #FP2 
+## Course Code: CS822
+## Assignment:  #FP2 
 
-###Overview
+### Overview
 
 PI Controller [1] is an Active Queue Management (AQM) algorithm like RED [2], ARED [3], etc. PIE [4], the latest algorithm, is based on PI. PI Controller is already implemented in ns-2 [5]. This repository contains an implementation of PI controller in ns-3 [6].
 
-###References:
+### References:
 
 
 [1]  On designing improved controllers for AQM Routers supporting TCP flows (Link:   
